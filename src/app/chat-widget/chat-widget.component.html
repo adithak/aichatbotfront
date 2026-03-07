@@ -1,0 +1,100 @@
+<!-- Floating Chat Button -->
+<button class="chat-toggle" (click)="toggleChat()">
+  💬
+</button>
+
+<!-- Chat Window -->
+<div class="chat-container" *ngIf="isOpen" [ngClass]="{'fullscreen-mode': isFullscreen}">
+  <!-- Header -->
+ <div class="chat-header">
+    <!-- <img src="assets/ngi.jpg" class="chat-logo"> -->
+NGI Assist
+
+  <div class="header-actions">
+    <span class="fullscreen-btn" (click)="toggleFullscreen()">⛶</span>
+    <span class="close-btn" (click)="toggleChat()">✖</span>
+  </div>
+
+</div>
+
+  <!-- Messages -->
+  <div class="chat-messages">
+    <div *ngFor="let msg of messages" [ngClass]="msg.sender === 'user' ? 'user-msg' : 'bot-msg'">
+      <!-- USER MESSAGE -->
+      <div *ngIf="msg.sender === 'user'">
+        {{ msg.text }}
+         
+      </div>
+
+      <!-- BOT MESSAGE -->
+      <div *ngIf="msg.sender === 'bot'">
+        <!-- Simple text message (fallback) -->
+        <div *ngIf="msg.text && !msg.links">
+          {{ msg.text }}
+          
+        </div>
+         <div *ngIf="msg.text && !msg.links">
+          {{ msg.text1 }}
+          
+        </div>
+         <div *ngIf="msg.text && !msg.links">
+          {{ msg.text2 }}
+          
+        </div>
+
+        <!-- Structured response with summary and links -->
+        <div *ngIf="msg.summary || msg.links">
+          <!-- Summary -->
+          <div class="bot-summary" *ngIf="msg.summary">
+            <div class="summary-text">{{ msg.summary }}</div>
+          </div>
+
+          <!-- Links Section -->
+         <div class="links-section" *ngIf="msg.links && msg.links.length > 0">
+  <div class="links-header">📌 Top 5 Search Results:</div>
+  
+  <div class="link-items">
+    <div class="link-item" *ngFor="let link of msg.links; let i = index">
+      <div class="item-number">{{ i + 1 }}</div>
+      
+      <!-- Website Link -->
+      <div class="item-content">
+        <a [href]="formatLink(link.link)" target="_blank" rel="noopener noreferrer" class="item-title">
+          🌐 Website: {{ link.title }}
+        </a>
+        <div class="item-snippet" *ngIf="link.snippet">
+          {{ link.snippet }}
+        </div>
+      </div>
+
+      <!-- YouTube Link -->
+      
+
+    </div>
+
+    
+  </div>
+</div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-footer">
+  Developed by <span class="brand">NGI - Kerala</span>
+</div>
+  <!-- Input -->
+ <div class="chat-input">
+  <input 
+    [(ngModel)]="userMessage" 
+    placeholder="Type your message..." 
+    (keyup.enter)="sendMessage()"
+  />
+
+<button (click)="sendMessage()">Send</button>
+
+  <!-- Voice button -->
+<button class="mic-btn" (click)="startVoice()">🎤</button>
+</div>
+</div>
