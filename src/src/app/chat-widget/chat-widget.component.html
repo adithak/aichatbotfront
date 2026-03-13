@@ -17,56 +17,6 @@ NGI Assist
 
 </div>
 
-<div class="user-form" *ngIf="!isVerified">
-
-  <h3>User Verification</h3>
-
-  <!-- Option Selection -->
-  <label>
-    <input type="radio" name="mode" [(ngModel)]="mode" value="reg">
-    I have Registration ID
-  </label>
-
-  <label>
-    <input type="radio" name="mode" [(ngModel)]="mode" value="otp">
-    Generate OTP
-  </label>
-
-  <!-- Registration ID Option -->
-  <div *ngIf="mode === 'reg'">
-
-    <input type="text" [(ngModel)]="registrationId" placeholder="Enter Registration ID">
-
-    <button (click)="verifyRegistration()">Verify</button>
-
-  </div>
-
-  <!-- OTP Option -->
-  <div *ngIf="mode === 'otp'">
-
-    <input type="text" [(ngModel)]="user.name" placeholder="Full Name">
-
-    <input type="email" [(ngModel)]="user.email" placeholder="Email Address">
-
-    <input type="text" [(ngModel)]="user.phone" placeholder="Phone Number">
-
-    <button (click)="sendOTP()" [disabled]="sending || otpSent">
-      {{ sending ? 'Sending...' : 'Send OTP' }}
-    </button>
-
-    <div *ngIf="otpSent">
-
-      <input type="text" [(ngModel)]="otp" placeholder="Enter OTP">
-
-      <button (click)="verifyOTP()">Verify OTP</button>
-
-    </div>
-
-  </div>
-
-</div>
-
-
   <!-- Messages -->
   <div class="chat-messages">
     <div *ngFor="let msg of messages" [ngClass]="msg.sender === 'user' ? 'user-msg' : 'bot-msg'">

@@ -19,32 +19,9 @@ export class ChatWidgetComponent {
   chatOpen = false;
   isFullscreen = true;
 
-  mode = 'reg';
-
-  registrationId = '';
-  generatedOTP: string = "";
-
   recognition: any;
 
-sending = false;
-  user:any = {
-  name:'',
-  email:'',
-  phone:'',
-  ip:''
-};
-
-otp = '';
-otpSent = false;
-isVerified = false;
-
   constructor(private http: HttpClient,private sanitizer: DomSanitizer) {
-
-
-    this.http.get("https://api.ipify.org?format=json")
-.subscribe((res:any)=>{
-  this.user.ip = res.ip;
-});
 
     // Welcome message
     this.messages.push({
@@ -86,77 +63,6 @@ isVerified = false;
 
   }
 
-verifyRegistration(){
-
-  if(!this.registrationId){
-    alert("Please enter registration ID");
-    return;
-  }
-
-  const data = {
-    registrationId: this.registrationId
-  };
-
-  this.http.post<any>(
-    "https://toothy-theresia-nonexcitably.ngrok-free.dev/api2/addingbankaccount",
-    data
-  )
-  .subscribe({
-    next: (res) => {
-
-     // console.log("API Response:", res);
-
-      if(res.success){
-       // alert("Registration verified successfully");
-        this.isVerified = true;
-      }else{
-        alert("Invalid Registration ID");
-      }
-
-    },
-    error: (err) => {
-      console.error(err);
-      alert("Server error");
-    }
-  });
-
-}
-
-sendOTP(){
-
-  if(!this.user.name || !this.user.email || !this.user.phone){
-    alert("Please fill all fields");
-    return;
-  }
-
-  this.sending = true;
-
-  this.http.post<any>("https://toothy-theresia-nonexcitably.ngrok-free.dev/api2/active", this.user)
-  .subscribe(res => {
-
-    // this.registrationId = 
-    // console.log(res.user.id)
-    this.registrationId=res.user.id
-    this.otpSent = true;
-    this.generatedOTP = res.otp;
-    this.sending = false;
-
-  });
-}
-
-verifyOTP(){
-
-  if(this.otp == this.generatedOTP){
-
-    this.isVerified = true;
-    //alert("Verification successful");
-
-  }else{
-    alert("Invalid OTP");
-  }
-
-}
-
   
 
    transform(url: string): SafeResourceUrl {
@@ -176,11 +82,6 @@ verifyOTP(){
 
   // 🎤 Start voice recording
 startVoice() {
-
-  if(!this.isVerified){
-  alert("Please verify email first");
-  return;
-}
 
    if (!this.recognition) {
     alert("Voice recognition not available");
@@ -250,17 +151,9 @@ startVoice() {
 
   sendMessage() {
 
-if(!this.isVerified){
-  alert("Please verify email first");
-  return;
-}
-    
-
     if (!this.userMessage.trim()) return;
 
     // user message
-
-  
     this.messages.push({
       sender: 'user',
       text: this.userMessage
@@ -270,49 +163,37 @@ if(!this.isVerified){
 
     this.userMessage = '';
 
-     const payload = {
-   message: message,
-    registrationId: this.registrationId,
-    ip: this.user.ip
-  };
+    this.http.post<any>('https://aichatbotbackend-yumn.onrender.com/chat', {
+      message: message
+    }).subscribe({
 
-
-
-    //  this.http.post<any>('https://aichatbotbackend-production-af5c.up.railway.app/chat', {
-
-    // Send to API
-
-  this.http.post<any>('https://toothy-theresia-nonexcitably.ngrok-free.dev/api1/chat', payload)
-    .subscribe({
       next: (res) => {
-
-        this.http.post<any>('https://toothy-theresia-nonexcitably.ngrok-free.dev/api2/addingdocument', payload)
-    .subscribe({
-      next: (res) => {
-
-
-      }})
-
 
         this.messages.push({
           sender: 'bot',
           summary: res.summary || '',
           links: res.links || [],
-          videos: res.videos || [],  // assuming API returns videos separately
+          videos: res.links || [],
         });
 
-        // Optional: speak summary
+        // 🔊 speak summary
         if (res.summary) {
           // this.speak(res.summary);
         }
+
       },
+
       error: (error) => {
+
         console.error('API Error:', error);
+
         this.messages.push({
           sender: 'bot',
           text: 'Sorry, I encountered an error. Please try again.'
         });
+
       }
+
     });
 
   }
